@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="mi">
+<head>
+<title>Ngā Pūtea o ngā Moutere</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: a wrapping grid of island cards; each card = whole bar over a bar cut into ten 10% parts. */
+:root{
+  --bg:#FBF6EA; --panel:#FFFFFF; --ink:#1F2A2E; --ink2:#4A575C; --line:#1F2A2E; --sand:#EFE7D3; --gap:#FFFFFF; --hi:#FFD66B;
+  --money:#0F6B5C; --on-money:#FFFFFF;
+  --red:#A32B24; --on-red:#FFFFFF;
+  --blue:#5B9BE8; --on-blue:#0B1F33;
+  --zero:#EFE7D3; --on-zero:#1F2A2E;
+  --box:#FFFFFF; --on-box:#1F2A2E;
+  --fd:'Fredoka',system-ui,sans-serif; --fb:'Nunito',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101A19; --panel:#18262A; --ink:#F2EEE3; --ink2:#B7C2C0; --line:#5C7276; --sand:#26383C; --gap:#18262A; --hi:#E7B83F;
+    --money:#2FA58F; --on-money:#06211C;
+    --red:#D2554C; --on-red:#1A0605;
+    --blue:#5B9BE8; --on-blue:#0B1F33;
+    --zero:#26383C; --on-zero:#F2EEE3;
+    --box:#F2EEE3; --on-box:#1F2A2E;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101A19; --panel:#18262A; --ink:#F2EEE3; --ink2:#B7C2C0; --line:#5C7276; --sand:#26383C; --gap:#18262A; --hi:#E7B83F;
+  --money:#2FA58F; --on-money:#06211C;
+  --red:#D2554C; --on-red:#1A0605;
+  --blue:#5B9BE8; --on-blue:#0B1F33;
+  --zero:#26383C; --on-zero:#F2EEE3;
+  --box:#F2EEE3; --on-box:#1F2A2E;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16px;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+.wrap{max-width:1360px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.key{display:flex;align-items:center;gap:12px;font-family:var(--fd);font-weight:600;font-size:22px}
+.keybar{width:min(300px,60vw);height:28px;border-radius:6px;background-color:var(--money);position:relative;
+  background-image:repeating-linear-gradient(to right,transparent 0,transparent calc(10% - 3px),var(--gap) calc(10% - 3px),var(--gap) 10%)}
+.keybar i{position:absolute;left:0;top:0;bottom:0;width:10%;background:var(--hi);border-radius:6px 0 0 6px;opacity:.9}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;min-width:44px;padding:0 14px;border:2px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:700 14px var(--fb);cursor:pointer;justify-content:center}
+.btn:hover{background:var(--sand)}
+.btn:focus-visible,.fld:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:24px}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:22px 24px 24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.iname{font-family:var(--fd);font-weight:600;font-size:26px;line-height:1.15;margin:0;min-height:30px;overflow-wrap:anywhere}
+.lbl{font-weight:800;font-size:15px;margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;min-height:36px}
+.chip{font-weight:700;font-size:14px;background:var(--sand);border-radius:999px;padding:6px 12px}
+.chip b{font-family:var(--fd);font-weight:600;font-size:15px}
+.stack{display:flex;flex-direction:column;gap:4px}
+.whole{position:relative;height:46px;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding:0 6px;font-family:var(--fd);font-weight:700}
+.num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:30px;line-height:1;white-space:nowrap}
+.rb{display:flex;align-items:center;gap:6px;font-size:26px;line-height:1}
+.rbox{width:64px;height:34px;background:var(--box);color:var(--on-box);border:0;border-radius:6px;font:600 20px var(--fd);text-align:center;padding:0 4px;min-width:0}
+.track{position:relative;height:28px;border-radius:6px;background-image:repeating-linear-gradient(to right,transparent 0,transparent calc(10% - 3px),var(--gap) calc(10% - 3px),var(--gap) 10%)}
+.track::after{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(10% - 3px);background:var(--hi);border-radius:6px 0 0 6px;opacity:.9}
+.c-money{background-color:var(--money);color:var(--on-money)}
+.c-red{background-color:var(--red);color:var(--on-red)}
+.c-blue{background-color:var(--blue);color:var(--on-blue)}
+.is-zero{background-color:var(--zero);color:var(--on-zero)}
+.tenth{display:flex;align-items:center;gap:12px;font-family:var(--fd);font-weight:600;font-size:20px;margin-top:2px}
+.entry{width:84px;height:46px;border:2px solid var(--line);border-radius:8px;background:var(--box);color:var(--on-box);font:600 22px var(--fd);text-align:center;padding:0 4px;min-width:0}
+.rbox:focus-visible,.entry:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.editor{display:none;flex-direction:column;gap:10px;border-top:2px dashed var(--line);margin-top:8px;padding-top:14px}
+body.editing .editor{display:flex}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:800;color:var(--ink2);min-width:0}
+.fld{width:100%;min-height:44px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:700 16px var(--fb);padding:0 10px}
+.hint{font-size:13px;color:var(--ink2);margin:0}
+.bar-edit{display:none;border:2px dashed var(--line);border-radius:12px;padding:12px 16px;color:var(--ink2);font-size:14px;font-weight:700}
+body.editing .bar-edit{display:block}
+@media (prefers-reduced-motion:no-preference){.btn{transition:background .15s}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1 class="vh">Ngā Pūtea o ngā Moutere</h1>
+  <div class="top">
+    <div class="key"><div class="keybar"><i></i></div><span>= 10%</span></div>
+    <div class="tools">
+      <button class="btn" id="ans" type="button" aria-pressed="false" aria-label="Show answers" title="Show answers">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <button class="btn" id="edit" type="button" aria-pressed="false" aria-label="Edit totals" title="Edit totals">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="bar-edit" id="editbar">
+    <span>Edit mode: change a name, the number of each coin, or the ticket counts. Everything updates and saves on this device.</span>
+    <button class="btn" id="reset" type="button" style="margin-left:12px">Reset to starting totals</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function(){
+  var KEY='nga-putea-v1';
+  var DEN=[{k:'500',l:'$5'},{k:'200',l:'$2'},{k:'100',l:'$1'},{k:'50',l:'50c'},{k:'20',l:'20c'},{k:'10',l:'10c'}];
+  var DEFAULTS=[
+    {name:'Te Moutere Puia',coins:{'100':1,'50':1,'10':3},red:19,blue:16},
+    {name:'Tarakona Taimana',coins:{'500':1,'200':1,'10':2},red:22,blue:35},
+    {name:'Moutere Minioni',coins:{'50':1},red:22,blue:4},
+    {name:'Te Wairangi',coins:{'20':6},red:53,blue:18},
+    {name:'Te Turuki Ana',coins:{'50':1,'20':1,'10':3},red:37,blue:25},
+    {name:'Moutere Tūmatarau',coins:{'20':9,'10':2},red:0,blue:0}
+  ];
+  function clone(o){return JSON.parse(JSON.stringify(o));}
+  function num(v){var n=parseInt(v,10);return isNaN(n)||n<0?0:Math.min(n,9999);}
+  function load(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){
+        var s=JSON.parse(raw);
+        if(Array.isArray(s)&&s.length===6){
+          return s.map(function(x,i){
+            var c={};DEN.forEach(function(d){c[d.k]=num(x&&x.coins&&x.coins[d.k]);});
+            return {name:String((x&&x.name)||DEFAULTS[i].name).slice(0,40),coins:c,red:num(x&&x.red),blue:num(x&&x.blue)};
+          });
+        }
+      }
+    }catch(e){}
+    return clone(DEFAULTS).map(function(x){var c={};DEN.forEach(function(d){c[d.k]=x.coins[d.k]||0;});x.coins=c;return x;});
+  }
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var state=load(), showAns=false, wasAns=false, cards=[];
+
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+  function cents(i){var t=0;DEN.forEach(function(d){t+=parseInt(d.k,10)*state[i].coins[d.k];});return t;}
+  function dollars(c){return '$'+(c/100).toFixed(2);}
+  function roundDollar(c){return Math.floor((c+50)/100);}
+  function roundTen(n){return Math.floor((n+5)/10)*10;}
+
+  function box(cls){var i=document.createElement('input');i.type='text';i.className=cls;i.maxLength=6;i.autocomplete='off';i.setAttribute('aria-label','answer');return i;}
+  function metric(parent,label,cls){
+    parent.appendChild(el('div','lbl',label));
+    var stack=el('div','stack');
+    var whole=el('div','whole '+cls), n=el('span','num'), rb=el('span','rb'), rbox=box('rbox');
+    rb.appendChild(el('span',null,'≈'));rb.appendChild(rbox);whole.appendChild(n);whole.appendChild(rb);
+    var track=el('div','track '+cls);
+    stack.appendChild(whole);stack.appendChild(track);parent.appendChild(stack);
+    var tenth=el('div','tenth');tenth.appendChild(el('span',null,'huamoni 10% ='));
+    var entry=box('entry');tenth.appendChild(entry);parent.appendChild(tenth);
+    return {whole:whole,track:track,n:n,rbox:rbox,entry:entry,cls:cls};
+  }
+  function field(label,id,type,val,onInput){
+    var f=el('label','f');f.appendChild(el('span',null,label));
+    var inp=document.createElement('input');inp.className='fld';inp.id=id;inp.value=val;
+    if(type==='number'){inp.type='number';inp.min='0';inp.max='9999';inp.inputMode='numeric';}else{inp.type='text';inp.maxLength=40;}
+    inp.addEventListener('input',function(){onInput(inp.value);});
+    f.appendChild(inp);return f;
+  }
+
+  var grid=document.getElementById('grid');
+  state.forEach(function(s,i){
+    var card=el('section','card'), name=el('h2','iname');
+    card.appendChild(name);
+    var chips=el('div','chips');
+    var m=metric(card,'He Pūtea','c-money');
+    card.insertBefore(chips,card.querySelector('.stack'));
+    var r=metric(card,'Tikiti Whero','c-red');
+    var b=metric(card,'Tikiti Kahurangi','c-blue');
+
+    var ed=el('div','editor');
+    ed.appendChild(field('Island name','n'+i,'text',s.name,function(v){state[i].name=v.slice(0,40);update();save();}));
+    ed.appendChild(el('p','hint','How many of each coin?'));
+    var row=el('div','row');
+    DEN.forEach(function(d){row.appendChild(field(d.l,'c'+i+'-'+d.k,'number',s.coins[d.k],function(v){state[i].coins[d.k]=num(v);update();save();}));});
+    ed.appendChild(row);
+    var row2=el('div','row');
+    row2.appendChild(field('Red tickets','r'+i,'number',s.red,function(v){state[i].red=num(v);update();save();}));
+    row2.appendChild(field('Blue tickets','b'+i,'number',s.blue,function(v){state[i].blue=num(v);update();save();}));
+    ed.appendChild(row2);
+    card.appendChild(ed);
+    grid.appendChild(card);
+    cards.push({name:name,chips:chips,m:m,r:r,b:b,ed:ed});
+  });
+
+  function setTicket(t,n){
+    var z=n===0;
+    t.n.textContent=n;
+    t.whole.className='whole '+(z?'is-zero':t.cls);
+    t.track.className='track '+(z?'is-zero':t.cls);
+    var r=roundTen(n);
+    if(showAns){t.rbox.value=r;t.entry.value=r/10;}else if(wasAns){t.rbox.value='';t.entry.value='';}
+  }
+  function update(){
+    state.forEach(function(s,i){
+      var c=cards[i];
+      c.name.textContent=s.name||'';
+      c.chips.textContent='';
+      DEN.forEach(function(d){
+        if(s.coins[d.k]>0){var ch=el('span','chip');var b=el('b',null,d.l);ch.appendChild(b);ch.appendChild(document.createTextNode(' × '+s.coins[d.k]));c.chips.appendChild(ch);}
+      });
+      var t=cents(i);
+      c.m.n.textContent=dollars(t);
+      var rd=roundDollar(t);
+      if(showAns){c.m.rbox.value='$'+rd;c.m.entry.value='$'+(rd/10).toFixed(2);}else if(wasAns){c.m.rbox.value='';c.m.entry.value='';}
+      setTicket(c.r,s.red);setTicket(c.b,s.blue);
+    });
+    wasAns=showAns;
+  }
+  function bind(id,fn){document.getElementById(id).addEventListener('click',fn);}
+  bind('ans',function(){showAns=!showAns;this.setAttribute('aria-pressed',showAns);update();});
+  bind('edit',function(){var on=!document.body.classList.contains('editing');document.body.classList.toggle('editing',on);this.setAttribute('aria-pressed',on);});
+  bind('reset',function(){
+    state=clone(DEFAULTS).map(function(x){var c={};DEN.forEach(function(d){c[d.k]=x.coins[d.k]||0;});x.coins=c;return x;});
+    state.forEach(function(s,i){
+      document.getElementById('n'+i).value=s.name;
+      DEN.forEach(function(d){document.getElementById('c'+i+'-'+d.k).value=s.coins[d.k];});
+      document.getElementById('r'+i).value=s.red;document.getElementById('b'+i).value=s.blue;
+    });
+    update();save();
+  });
+  // push loaded values into the edit fields
+  state.forEach(function(s,i){
+    document.getElementById('n'+i).value=s.name;
+    DEN.forEach(function(d){document.getElementById('c'+i+'-'+d.k).value=s.coins[d.k];});
+    document.getElementById('r'+i).value=s.red;document.getElementById('b'+i).value=s.blue;
+  });
+  update();
+})();
+</script>
+
+</body>
+</html>
